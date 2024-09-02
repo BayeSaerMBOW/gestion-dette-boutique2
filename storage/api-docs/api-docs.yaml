@@ -1,0 +1,316 @@
+openapi: 3.0.0
+info:
+  title: API de gestion des articles
+  description: Documentation de l'API pour la gestion des articles.
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Serveur de développement local
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Article:
+      type: object
+      properties:
+        id:
+          type: integer
+        libelle:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+paths:
+  /user:
+    get:
+      summary: Obtenir les informations de l'utilisateur authentifié
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Informations de l'utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /v1/articles/{id}:
+    get:
+      summary: Obtenir un article par ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de l'article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        '404':
+          description: Article non trouvé
+
+  /v1/articles:
+    post:
+      summary: Créer un nouvel article
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Article créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+
+  /v1/users:
+    get:
+      summary: Obtenir la liste des utilisateurs
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /v1/articles/{id}:
+    delete:
+      summary: Supprimer un article par ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Article supprimé avec succès
+
+  /v1/articles/update-stock:
+    post:
+      summary: Mettre à jour le stock d'articles
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Stock mis à jour avec succès
+
+  /v1/articles/{id}/quantity:
+    patch:
+      summary: Mettre à jour la quantité d'un article
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Quantité mise à jour avec succès
+
+  /v1/articles:
+    get:
+      summary: Obtenir les articles disponibles
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des articles disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Article"
+
+  /v1/users-by-etat:
+    post:
+      summary: Obtenir les utilisateurs par état
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des utilisateurs par état
+
+  /v1/clients/filter-by-telephone:
+    post:
+      summary: Filtrer les clients par téléphone
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des clients filtrés par téléphone
+
+  /clients:
+    get:
+      summary: Obtenir la liste des clients
+      responses:
+        '200':
+          description: Liste des clients récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+
+    post:
+      summary: Créer un nouveau client
+      responses:
+        '201':
+          description: Client créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /clients/{id}:
+    get:
+      summary: Obtenir un client par ID
+      responses:
+        '200':
+          description: Détails du client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        '404':
+          description: Client non trouvé
+
+    patch:
+      summary: Mettre à jour un client
+      responses:
+        '200':
+          description: Client mis à jour avec succès
+
+    delete:
+      summary: Supprimer un client
+      responses:
+        '204':
+          description: Client supprimé avec succès
+
+  /loginuser:
+    post:
+      summary: Connexion d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: "durgan.maribel"
+                password:
+                  type: string
+                  example: "password"
+              required:
+                - login
+                - password
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMjM0NTY3ODkwIiwiaWF0IjoxNTYyMzkwMjYifQ.S0U1Q0IgT2b3lPo-8TEgQQW65KrHJ7Utb99Kn9E8z7s"
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      login:
+                        type: string
+                        example: "durgan.maribel"
+                      name:
+                        type: string
+                        example: "Durgan Maribel"
+              required:
+                - token
+                - user
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid credentials"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unauthorized"
